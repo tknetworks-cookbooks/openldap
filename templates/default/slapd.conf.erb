@@ -133,9 +133,9 @@ access to *
         by dn="cn=admin,<%= node['openldap']['basedn'] %>" write
 <% node['openldap']['peers'].each do |peer| -%>
   <% if peer.start_with?('ip:') -%>
-        by peername.ip="<%= peer[3..-1] -%> read
+        by peername.ip="<%= peer[3..-1] -%>" read
   <% elsif peer.start_with?('ipv6:') -%>
-        by.peername.ip6="<%= peer[5..-1] -%> read
+        by peername.ipv6="<%= peer[5..-1] -%>" read
   <% end -%>
 <% end -%>
         by * none
