@@ -1,0 +1,40 @@
+attributetype (
+ 1.3.6.1.30735.1.1.1
+ NAME 'mailDomain'
+ DESC 'Domainname for mail account'
+ EQUALITY caseIgnoreIA5Match
+ SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256}
+ )
+
+attributetype (
+ 1.3.6.1.30735.1.1.2
+ NAME 'mailForward'
+ DESC 'Forwarding addresses'
+ EQUALITY caseIgnoreIA5Match
+ SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256}
+ )
+
+attributetype (
+ 1.3.6.1.30735.1.1.3
+ NAME 'mailStatus'
+ DESC 'Account status. 0=disabled, 1=enabled'
+ EQUALITY integerMatch
+ SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE
+ )
+
+attributetype (
+ 1.3.6.1.30735.1.1.4
+ NAME 'mailDirectory'
+ DESC 'A Path where mails are stored'
+ EQUALITY caseIgnoreIA5Match
+ SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256}
+ )
+
+objectclass (
+ 1.3.6.1.4.1.3.30735.1.1.101
+ NAME 'mailaccount'
+ DESC 'mailaccount object'
+ SUP top AUXILIARY
+ MUST ( mail $ mailDirectory $ mailDomain $ mailStatus )
+ MAY ( sn $ givenName $ mailForward $ userPassword )
+ )

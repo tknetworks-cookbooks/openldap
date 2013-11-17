@@ -19,8 +19,8 @@
 include_recipe "openldap::client"
 
 case node['platform']
-when "ubuntu"
-  package "db4.8-util" do
+when "ubuntu", "debian"
+  package "db5.1-util" do
     action :upgrade
   end
 
@@ -62,11 +62,8 @@ if node['openldap']['tls_enabled'] && node['openldap']['manage_ssl']
   end
 end
 
-service "slapd" do
-  action [:enable, :start]
-end
-
-if (node['platform'] == "ubuntu")
+case node['platform']
+when "debian","ubuntu"
   template "/etc/default/slapd" do
     source "default_slapd.erb"
     owner "root"
@@ -79,6 +76,23 @@ if (node['platform'] == "ubuntu")
     owner "openldap"
     group "openldap"
     action :create
+  end
+
+  directory "#{node['openldap']['dir']}/schema/local" do
+    owner "root"
+    group "root"
+    mode 0655
+  end
+
+  node['openldap']['local_schemas'].each do |s|
+    cookbook_file "#{node['openldap']['dir']}/schema/local/#{s}" do
+      source s
+      owner "root"
+      group "root"
+      mode 0644
+      notifies :reload, "service[slapd]"
+      cookbook node['openldap']['local_schemas_cookbook'] || cookbook_name
+    end
   end
 
   execute "slapd-config-convert" do
@@ -96,22 +110,15 @@ if (node['platform'] == "ubuntu")
     notifies :stop, "service[slapd]", :immediately
     notifies :run, "execute[slapd-config-convert]"
   end
-else
-  case node['platform']
-  when "debian","ubuntu"
-    template "/etc/default/slapd" do
-      source "default_slapd.erb"
-      owner "root"
-      group "root"
-      mode 00644
-    end
-  end
 
-  template "#{node['openldap']['dir']}/slapd.conf" do
-    source "slapd.conf.erb"
-    mode 00640
-    owner "openldap"
-    group "openldap"
-    notifies :restart, "service[slapd]"
+  template "/etc/default/slapd" do
+    source "default_slapd.erb"
+    owner "root"
+    group "root"
+    mode 00644
   end
+end
+
+service "slapd" do
+  action [:enable, :start]
 end

@@ -1,0 +1,9 @@
+{
+  "id": "slapd_replpw",
+  "ldap.example.com": {
+    "encrypted_data": "wF1vxfp9mwifprgBObsb34j4V70TSNRHnK9flbv/CZw=\n",
+    "iv": "v1XrD8L3KfPcPBh5giK7mw==\n",
+    "version": 1,
+    "cipher": "aes-256-cbc"
+  }
+}

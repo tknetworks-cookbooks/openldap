@@ -26,6 +26,10 @@ default['openldap']['shadow_ou'] = 'people'
 default['openldap']['group_ou'] = 'groups'
 default['openldap']['automount_ou'] = 'automount'
 
+default['openldap']['indexes'] = []
+default['openldap']['peers'] = []
+default['openldap']['local_schemas'] = []
+default['openldap']['local_schemas_cookbook'] = nil
 
 
 if node['domain'].length > 0

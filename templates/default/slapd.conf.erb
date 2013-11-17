@@ -21,6 +21,9 @@ include         <%= node['openldap']['dir'] %>/schema/core.schema
 include         <%= node['openldap']['dir'] %>/schema/cosine.schema
 include         <%= node['openldap']['dir'] %>/schema/nis.schema
 include         <%= node['openldap']['dir'] %>/schema/inetorgperson.schema
+<%- node['openldap']['local_schemas'].each do |s| -%>
+include         <%= node['openldap']['dir'] %>/schema/local/<%= s %>
+<%- end %>
 
 # Where the pid file is put. The init.d script
 # will not stop the server if you change this.
@@ -30,7 +33,7 @@ pidfile         <%= node['openldap']['run_dir'] %>/slapd.pid
 argsfile        <%= node['openldap']['run_dir'] %>/slapd.args
 
 # Read slapd.conf(5) for possible values
-loglevel        0
+loglevel        any
 
 <% unless node['platform'] == "centos" -%>
 # Where the dynamically loaded modules are stored
@@ -60,7 +63,7 @@ backend		hdb
 database        hdb
 suffix          "<%= node['openldap']['basedn'] %>"
 rootdn          "cn=admin,<%= node['openldap']['basedn'] %>"
-rootpw		      <%= node['openldap']['rootpw'] %>
+rootpw          <%= node['openldap']['rootpw'] %>
 directory       "/var/lib/ldap"
 lastmod         on
 
@@ -81,6 +84,9 @@ index objectClass eq
 index cn,ou,sn,uid,l,mail,gecos,memberUid,description
 index loginShell,homeDirectory pres,eq,approx
 index uidNumber,gidNumber pres,eq
+<% node['openldap']['indexes'].each do |i| -%>
+index <%= i -%>
+<% end -%>
 
 <% if node['openldap']['slapd_type'] == "master" -%>
 overlay syncprov
@@ -89,16 +95,14 @@ syncprov-sessionlog 100
 <% end -%>
 <% if node['openldap']['slapd_type'] == "slave" -%>
 syncrepl rid=<%= node['openldap']['slapd_rid'] %>
-  provider=ldap://<%= node['openldap']['slapd_master'] %>:389
+  provider=ldaps://<%= node['openldap']['slapd_master'] %>
   type=refreshAndPersist
-  interval=01:00:00:00
+  interval=00:1:00:00
   searchbase="<%= node['openldap']['basedn'] %>"
-  filter="(objectClass=*)"
-  scope=sub
   schemachecking=off
+  attrs="*,+"
   bindmethod=simple
-  binddn="cn=syncrole,<%= node['openldap']['basedn'] %>"
-  starttls=yes
+  binddn="cn=admin,<%= node['openldap']['basedn'] %>"
   credentials="<%= node['openldap']['slapd_replpw'] %>"
 <% end -%>
 # The userPassword by default can be changed
@@ -107,8 +111,7 @@ syncrepl rid=<%= node['openldap']['slapd_rid'] %>
 # admin entry below
 # These access lines apply to database #1 only
 access to attrs=userPassword,shadowLastChange
-        by group.exact="cn=administrators,<%= node['openldap']['basedn'] %>" write
-        by dn="cn=syncrole,<%= node['openldap']['basedn'] %>" read
+        by dn="cn=admin,<%= node['openldap']['basedn'] %>" read
         by anonymous auth
         by self write
         by * none
@@ -127,6 +130,12 @@ access to dn.base="" by * read
 # The admin dn has full write access, everyone else
 # can read everything.
 access to *
-        by group.exact="cn=administrators,<%= node['openldap']['basedn'] %>" write
-        by dn="cn=syncrole,<%= node['openldap']['basedn'] %>" read
-        by * read
+        by dn="cn=admin,<%= node['openldap']['basedn'] %>" write
+<% node['openldap']['peers'].each do |peer| -%>
+  <% if peer.start_with?('ip:') -%>
+        by peername.ip="<%= peer[3..-1] -%> read
+  <% elsif peer.start_with?('ipv6:') -%>
+        by.peername.ip6="<%= peer[5..-1] -%> read
+  <% end -%>
+<% end -%>
+        by * none
