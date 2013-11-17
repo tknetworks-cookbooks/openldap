@@ -85,7 +85,7 @@ index cn,ou,sn,uid,l,mail,gecos,memberUid,description
 index loginShell,homeDirectory pres,eq,approx
 index uidNumber,gidNumber pres,eq
 <% node['openldap']['indexes'].each do |i| -%>
-index <%= i -%>
+index <%= i %>
 <% end -%>
 
 <% if node['openldap']['slapd_type'] == "master" -%>
