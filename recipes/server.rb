@@ -69,6 +69,7 @@ when "debian","ubuntu"
     owner "root"
     group "root"
     mode 00644
+    notifies :restart, "service[slapd]"
   end
 
   directory "#{node['openldap']['dir']}/slapd.d" do

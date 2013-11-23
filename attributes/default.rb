@@ -30,6 +30,7 @@ default['openldap']['indexes'] = []
 default['openldap']['peers'] = []
 default['openldap']['local_schemas'] = []
 default['openldap']['local_schemas_cookbook'] = nil
+default['openldap']['services'] = %w{ldap:/// ldapi:///}
 
 
 if node['domain'].length > 0

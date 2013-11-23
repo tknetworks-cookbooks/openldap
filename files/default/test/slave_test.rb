@@ -35,6 +35,10 @@ describe_recipe 'openldap::slave' do
     file("/etc/default/slapd").must_include %Q[SLAPD_GROUP="#{node['openldap']['group']}"]
   end
 
+  it 'sets a corresponding uris' do
+    file("/etc/default/slapd").must_include %Q[SLAPD_SERVICES="ldap:/// ldapi:///"]
+  end
+
   it 'sets the peers' do
     node['openldap']['peers'].each do |peer|
       if peer.start_with?('ip:')
