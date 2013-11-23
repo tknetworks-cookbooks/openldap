@@ -46,6 +46,8 @@ when "redhat","centos","amazon","scientific"
   default['openldap']['run_dir']    = "/var/run/openldap"
   default['openldap']['module_dir'] = "/usr/lib64/openldap"
 when "debian","ubuntu"
+  default['openldap']['user']       = 'openldap'
+  default['openldap']['group']      = 'openldap'
   default['openldap']['dir']        = "/etc/ldap"
   default['openldap']['run_dir']    = "/var/run/slapd"
   default['openldap']['module_dir'] = "/usr/lib/ldap"
