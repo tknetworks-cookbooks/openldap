@@ -30,6 +30,11 @@ describe_recipe 'openldap::slave' do
     file("#{node['openldap']['dir']}/slapd.conf").must_include node['openldap']['slapd_master']
   end
 
+  it 'sets a corresponding user/group' do
+    file("/etc/default/slapd").must_include %Q[SLAPD_USER="#{node['openldap']['user']}"]
+    file("/etc/default/slapd").must_include %Q[SLAPD_GROUP="#{node['openldap']['group']}"]
+  end
+
   it 'sets the peers' do
     node['openldap']['peers'].each do |peer|
       if peer.start_with?('ip:')
