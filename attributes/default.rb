@@ -69,6 +69,7 @@ default['openldap']['ssl_cert'] = "#{openldap['ssl_dir']}/#{openldap['server']}.
 default['openldap']['ssl_key'] = "#{openldap['ssl_dir']}/#{openldap['server']}.pem"
 
 default['openldap']['slapd_type'] = nil
+default['openldap']['server_id'] = 0
 
 if node['openldap']['slapd_type'] == "slave"
   default['openldap']['slapd_master'] = node['openldap']['server']

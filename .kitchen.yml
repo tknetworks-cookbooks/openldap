@@ -27,6 +27,7 @@ suites:
   attributes:
     openldap:
       slapd_rid: "0000"
+      server_id: 100
       rootpw: "{SSHA}6BjlvtSbVCL88li8IorkqMSofkLio58/" # secretsauce
       basedn: "dc=example, dc=com"
       server: "ldap-slave.example.com"

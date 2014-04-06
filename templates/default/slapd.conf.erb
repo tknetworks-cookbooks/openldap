@@ -39,7 +39,7 @@ loglevel        any
 # Where the dynamically loaded modules are stored
 modulepath	<%= node['openldap']['module_dir'] %>
 moduleload	back_hdb
-<% if node['openldap']['slapd_type'] == "master" -%>
+<% if %{multi master}.include?(node['openldap']['slapd_type']) -%>
 moduleload  syncprov
 <% end -%>
 <% end -%>
@@ -105,6 +105,12 @@ syncrepl rid=<%= node['openldap']['slapd_rid'] %>
   binddn="cn=admin,<%= node['openldap']['basedn'] %>"
   credentials="<%= node['openldap']['slapd_replpw'] %>"
 <% end -%>
+
+<% if node['openldap']['slapd_type'] == 'multi' -%>
+serverID <%= node['openldap']['server_id'] %>
+mirrormode on
+<% end -%>
+
 # The userPassword by default can be changed
 # by the entry owning it if they are authenticated.
 # Others should not be able to see it, except the
