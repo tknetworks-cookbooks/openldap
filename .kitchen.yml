@@ -18,6 +18,28 @@ platforms:
   - recipe[apt]
 
 suites:
+- name: multi
+  run_list:
+    - recipe[openldap::multi]
+    - recipe[openldap-test::mailaccount]
+    - recipe[minitest-handler]
+  encrypted_data_bag_secret_key_path: test/integration/secret_key
+  attributes:
+    openldap:
+      slapd_rid: "0000"
+      rootpw: "{SSHA}6BjlvtSbVCL88li8IorkqMSofkLio58/" # secretsauce
+      basedn: "dc=example, dc=com"
+      server: "ldap-slave.example.com"
+      slapd_master: "ldap.example.com"
+      preseed_dir: "/tmp/does_not_exist"
+      indexes:
+      - "mailDomain,mailStatus eq"
+      local_schemas:
+      - "mailaccount.schema"
+      local_schemas_cookbook: "openldap-test"
+      peers:
+      - "ip:127.0.0.1"
+      - "ipv6:::1%FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF"
 - name: slave
   run_list:
     - recipe[openldap::slave]

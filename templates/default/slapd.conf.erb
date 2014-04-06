@@ -88,12 +88,12 @@ index uidNumber,gidNumber pres,eq
 index <%= i %>
 <% end -%>
 
-<% if node['openldap']['slapd_type'] == "master" -%>
+<% if %w{multi master}.include?(node['openldap']['slapd_type']) -%>
 overlay syncprov
 syncprov-checkpoint 100 10
 syncprov-sessionlog 100
 <% end -%>
-<% if node['openldap']['slapd_type'] == "slave" -%>
+<% if %w{multi slave}.include?(node['openldap']['slapd_type']) -%>
 syncrepl rid=<%= node['openldap']['slapd_rid'] %>
   provider=ldaps://<%= node['openldap']['slapd_master'] %>
   type=refreshAndPersist

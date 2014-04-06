@@ -28,7 +28,7 @@ Be aware of the attributes used by this cookbook and adjust the defaults for you
 
 ### Server node attributes
 
-- `openldap[:slapd_type]` - master | slave
+- `openldap[:slapd_type]` - master | slave | multi
 - `openldap[:slapd_rid]` - unique integer ID, required if type is slave.
 - `openldap[:slapd_master]` - hostname of slapd master, attempts to search for slapd_type master.
 - `openldap[:manage_ssl]` - Whether or not this cookbook manages your SSL certificates.

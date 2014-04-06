@@ -50,4 +50,14 @@ describe_recipe 'openldap::slave' do
     end
   end
 
+  it 'sets up syncrepl' do
+    conf = "#{node['openldap']['dir']}/slapd.conf"
+    [
+      "syncrepl rid=#{node['openldap']['slapd_rid']}",
+      "provider=ldaps://#{node['openldap']['slapd_master']}",
+    ].each do |l|
+      file(conf).must_include l
+    end
+  end
+
 end

@@ -19,23 +19,5 @@
 
 node.default['openldap']['slapd_type'] = 'slave'
 
-if Chef::Config[:solo]
-  Chef::Log.warn("To use #{cookbook_name}::#{recipe_name} with solo, set attributes node['openldap']['slapd_replpw'] and node['openldap']['slapd_master'].")
-  begin
-    slapd_replpw = Chef::EncryptedDataBagItem.load('openldap', 'slapd_replpw')
-    if slapd_replpw.nil?
-      raise ArgumentError, "slapd_replpw is empty!"
-    end
-    node.default['openldap']['slapd_replpw'] = slapd_replpw[node['openldap']['slapd_master']]
-  rescue => e
-    Chef::Log.warn("No encrypted slapd_replpw found for #{node['openldap']['slapd_master']}, #{e}")
-  end
-else
-  ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
-  node.default['openldap']['slapd_replpw'] = secure_password
-  node.default['openldap']['slapd_master'] = search(:nodes, 'openldap_slapd_type:master').map {|n| n['openldap']['server']}.first
-  node.save
-end
-
+include_recipe "openldap::_slave"
 include_recipe "openldap::server"
-
