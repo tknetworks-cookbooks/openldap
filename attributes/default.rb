@@ -33,7 +33,7 @@ default['openldap']['local_schemas_cookbook'] = nil
 default['openldap']['services'] = %w{ldap:/// ldapi:///}
 
 
-if node['domain'].length > 0
+if node['domain'] and node['domain'].length > 0
   default['openldap']['basedn'] = "dc=#{node['domain'].split('.').join(",dc=")}"
   default['openldap']['server'] = "ldap.#{node['domain']}"
 end
